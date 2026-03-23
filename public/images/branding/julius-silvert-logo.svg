@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 52" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">Julius Silvert Est. 1915</title>
+  <text
+    x="0"
+    y="34"
+    fill="#ffffff"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="30"
+    font-style="italic"
+    font-weight="400"
+  >Julius</text>
+  <text
+    x="118"
+    y="34"
+    fill="#ffffff"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="22"
+    font-style="normal"
+    font-weight="400"
+    letter-spacing="0.12em"
+  >SILVERT</text>
+  <text
+    x="72"
+    y="48"
+    fill="#ffffff"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="11"
+    font-style="normal"
+    font-weight="400"
+  >Est. 1915</text>
+</svg>
