@@ -1,8 +1,12 @@
 # Dependencies
 node_modules/
+.pnp
+.pnp.js
 
 # Build
 dist/
+build/
+out/
 
 # Local env
 .env
@@ -11,7 +15,12 @@ dist/
 # Logs & debug
 npm-debug.log*
 pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 *.log
+
+# Testing
+coverage/
 
 # Editor & OS
 .DS_Store
@@ -23,3 +32,10 @@ Thumbs.db
 
 # Vite
 *.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc (from GitHub template)
+*.pem
+.vercel
