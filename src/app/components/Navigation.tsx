@@ -243,11 +243,8 @@ export function Navigation() {
             </SheetContent>
           </Sheet>
 
-          {/* Desktop: horizontal nav */}
-          <div
-            className="hidden md:flex flex-1 items-stretch justify-between gap-0 overflow-visible"
-            onMouseLeave={() => setHoveredItem(null)}
-          >
+          {/* Desktop: horizontal nav (mega menu is outside this row; mouseleave here would close the panel). */}
+          <div className="hidden md:flex flex-1 items-stretch justify-between gap-0 overflow-visible">
             {menuItems.map((item, index) => (
               <div key={index} className="relative shrink-0">
                 <button
@@ -269,7 +266,7 @@ export function Navigation() {
 
       {/* Desktop mega menu */}
       {activeMenu && activeMenu.categories && (
-        <div className="absolute left-0 right-0 top-full z-[100] hidden pt-2 md:block">
+        <div className="absolute left-0 right-0 top-full z-[100] hidden md:block">
           <div className="bg-white/95 backdrop-blur-sm shadow-2xl max-h-[min(75vh,720px)] overflow-y-auto overscroll-contain">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
               <div
