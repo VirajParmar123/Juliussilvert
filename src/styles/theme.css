@@ -117,9 +117,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  /* Julius Silvert — header & primary actions (replaces flat navy) */
-  --color-brand-header: #0b2130;
-  --color-brand-header-hover: #143d4a;
+  /* Julius Silvert — header & primary actions */
+  --color-brand-header: #022b3a;
+  --color-brand-header-hover: #054659;
 }
 
 @layer base {
@@ -129,6 +129,7 @@
 
   html {
     overflow-x: clip;
+    scroll-behavior: smooth;
   }
 
   body {

@@ -2,8 +2,27 @@ import { Facebook, Twitter, Youtube } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-[#1a1f35] text-gray-300">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-10 sm:py-12">
+    <footer className="relative overflow-hidden text-gray-300">
+      {/* Epicor-style footer: deep blue-teal base, bright teal glow top-left, vignetted edges */}
+      <div className="pointer-events-none absolute inset-0 bg-[#0b2f3d]" aria-hidden />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_90%_at_0%_0%,rgba(210,242,248,0.5)_0%,rgba(120,185,198,0.22)_28%,rgba(45,110,125,0.08)_48%,transparent_62%)]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_95%_72%_at_100%_102%,rgba(0,14,20,0.62)_0%,transparent_54%)]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_130%_100%_at_50%_120%,transparent_42%,rgba(3,18,26,0.35)_100%)]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 shadow-[inset_0_0_140px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]"
+        aria-hidden
+      />
+
+      <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 py-10 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
           {/* Logo and Social */}
           <div>
@@ -92,7 +111,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-gray-700">
+        <div className="pt-8 border-t border-white/10">
           <p className="text-center text-xs text-gray-300">
             © 2026 Julius Silvert. All rights reserved.
           </p>

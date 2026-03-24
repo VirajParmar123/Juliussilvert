@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, Heart, User, HelpCircle, X } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, HelpCircle, X, AlertCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { Link, useNavigate } from 'react-router';
@@ -8,6 +8,7 @@ import {
   categoryProducts,
   DEPARTMENT_BY_CATEGORY,
 } from '../data/catalog';
+import { categoryRowMatches, productMatchesSearch } from '../utils/catalogSearch';
 
 export function Header() {
   const { getItemCount } = useCart();
@@ -20,19 +21,16 @@ export function Header() {
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   const { categoryMatches, productMatches } = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = searchQuery.trim();
     if (!q) {
       return { categoryMatches: [] as { slug: string; label: string; itemCount: number }[], productMatches: [] };
     }
 
     const categoryMatches = Object.entries(DEPARTMENT_BY_CATEGORY)
-      .filter(
-        ([categoryKey, { label, slug }]) =>
-          label.toLowerCase().startsWith(q) ||
-          categoryKey.toLowerCase().startsWith(q) ||
-          slug.toLowerCase().startsWith(q)
+      .filter(([categoryKey, { label, slug }]) =>
+        categoryRowMatches(categoryKey, label, slug, q)
       )
-      .map(([categoryKey, { label, slug }]) => ({
+      .map(([, { label, slug }]) => ({
         slug,
         label,
         itemCount: categoryProducts[slug]?.length ?? 0,
@@ -40,11 +38,7 @@ export function Header() {
       .sort((a, b) => a.label.localeCompare(b.label))
       .slice(0, 6);
 
-    const productMatches = ALL_CATALOG_PRODUCTS.filter((p) => {
-      const name = p.name.toLowerCase();
-      const sku = p.itemNumber.toLowerCase();
-      return name.startsWith(q) || sku.startsWith(q);
-    })
+    const productMatches = ALL_CATALOG_PRODUCTS.filter((p) => productMatchesSearch(p, q))
       .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, 10);
 
@@ -130,9 +124,23 @@ export function Header() {
               >
                 <div className="p-4">
                   {categoryMatches.length === 0 && productMatches.length === 0 ? (
-                    <p className="text-sm text-gray-600 py-4 text-center">
-                      No products or categories starting with &quot;{searchQuery.trim()}&quot;
-                    </p>
+                    <div
+                      role="alert"
+                      className="flex gap-2.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-left"
+                    >
+                      <AlertCircle
+                        className="h-4 w-4 shrink-0 text-rose-600 mt-0.5"
+                        aria-hidden
+                      />
+                      <div className="text-sm min-w-0">
+                        <p className="font-semibold text-rose-950">
+                          We don&apos;t have any items that match &quot;{searchQuery.trim()}&quot;.
+                        </p>
+                        <p className="text-rose-900/80 text-xs mt-1.5">
+                          Try another search, or press Enter to open the full results page.
+                        </p>
+                      </div>
+                    </div>
                   ) : (
                     <>
                       {categoryMatches.length > 0 && (
