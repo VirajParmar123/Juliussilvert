@@ -141,12 +141,12 @@ export function ProductCard({
           
           {/* Unit Toggle - Only show if we have both prices */}
           {casePrice && pcPrice && (
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="grid grid-cols-2 gap-0 mb-3">
               <button
                 onClick={() => setSelectedUnit('case')}
-                className={`py-2 rounded-lg text-xs font-medium transition-all ${
+                className={`py-2 rounded-l-lg rounded-r-none border-r-0 text-xs font-medium transition-all ${
                   selectedUnit === 'case'
-                    ? 'bg-gray-100 text-gray-900 border-2 border-gray-300'
+                    ? 'bg-gray-100 text-gray-900 border border-gray-300'
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }`}
               >
@@ -154,9 +154,9 @@ export function ProductCard({
               </button>
               <button
                 onClick={() => setSelectedUnit('pc')}
-                className={`py-2 rounded-lg text-xs font-medium transition-all ${
+                className={`py-2 rounded-r-lg rounded-l-none border-l-0 text-xs font-medium transition-all ${
                   selectedUnit === 'pc'
-                    ? 'bg-gray-100 text-gray-900 border-2 border-gray-300'
+                    ? 'bg-gray-100 text-gray-900 border border-gray-300'
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }`}
               >

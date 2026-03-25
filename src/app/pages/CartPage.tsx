@@ -60,10 +60,13 @@ export function CartPage() {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm">
                 {items.map((item) => (
-                  <div key={item.id} className="p-4 sm:p-6 border-b border-gray-200 last:border-b-0">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+                  <div
+                    key={item.id}
+                    className="p-3 sm:p-4 border-b border-gray-200 last:border-b-0"
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                       {/* Product Image */}
-                      <div className="w-full max-w-[8rem] h-32 mx-auto sm:mx-0 sm:w-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-full max-w-[8rem] h-20 sm:h-24 mx-auto sm:mx-0 sm:w-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         <img
                           src={item.image}
                           alt={item.name}
@@ -85,12 +88,12 @@ export function CartPage() {
                           <div>Wasm: {item.wasmNumber}</div>
                         </div>
                         
-                        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
                           {/* Quantity Controls */}
                           <div className="flex items-center border border-gray-300 rounded overflow-hidden">
                             <button 
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="px-3 py-2 hover:bg-gray-100 transition-colors"
+                              className="px-2 py-1.5 hover:bg-gray-100 transition-colors"
                             >
                               <Minus className="w-4 h-4" />
                             </button>
@@ -101,11 +104,11 @@ export function CartPage() {
                                 const val = parseInt(e.target.value) || 1;
                                 updateQuantity(item.id, val);
                               }}
-                              className="w-16 text-center py-2 border-x border-gray-300"
+                              className="w-14 text-center py-1.5 border-x border-gray-300"
                             />
                             <button 
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="px-3 py-2 hover:bg-gray-100 transition-colors"
+                              className="px-2 py-1.5 hover:bg-gray-100 transition-colors"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
@@ -114,7 +117,7 @@ export function CartPage() {
                           {/* Remove Button */}
                           <button
                             onClick={() => removeFromCart(item.id)}
-                            className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                             Remove
