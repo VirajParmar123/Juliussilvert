@@ -243,12 +243,10 @@ export function ProductDetailPage() {
             </div>
 
             <div className="mb-2">
-              <div className="flex items-baseline gap-2 flex-wrap">
+              <div className="flex items-baseline gap-0 flex-wrap">
                 <span className="text-4xl font-bold text-gray-900">${currentPrice.toFixed(2)}</span>
                 {product.perLb != null && (
-                  <span className="text-gray-500 text-sm">
-                    / {product.perLb.toFixed(3)} {product.unit} ({selectedUnit})
-                  </span>
+                  <span className="text-gray-500 text-sm">/{product.perLb.toFixed(3)} {product.unit} ({selectedUnit})</span>
                 )}
               </div>
               <p className="text-sm text-gray-600 mt-2">{product.caseInfo}</p>

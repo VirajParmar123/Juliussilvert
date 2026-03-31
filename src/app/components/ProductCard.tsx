@@ -82,7 +82,7 @@ export function ProductCard({
 
   return (
     <div
-      className={`flex h-full flex-col self-stretch bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-gray-100 ${
+      className={`group relative flex h-full flex-col self-stretch overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl ${
         isGrid
           ? 'w-full min-w-0 max-w-none min-h-[520px] sm:min-h-[580px]'
           : 'min-h-[580px] w-[280px] max-w-[280px] flex-shrink-0'
@@ -102,9 +102,11 @@ export function ProductCard({
             height={224}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         </Link>
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/35 via-black/0 to-transparent" />
 
         <button
           type="button"
@@ -113,71 +115,100 @@ export function ProductCard({
             e.stopPropagation();
             handleToggleFavorite();
           }}
-          className="absolute top-3 right-3 z-[2] p-2.5 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+          className="absolute top-3 right-3 z-[2] inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white"
         >
           <Heart
-            className={`w-4 h-4 ${favorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
+            className={`h-4 w-4 ${favorite ? 'fill-red-500 text-red-500' : 'text-gray-700'}`}
           />
         </button>
+
+        <div className="absolute left-3 bottom-3 right-3 z-[1] flex items-center justify-between gap-2">
+          <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-white/90">
+            Julius Silvert
+          </p>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-gray-900 shadow-sm">
+              Item #{itemNumber}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Product Details */}
-      <div className="p-4 flex flex-col flex-1 min-h-0">
+      <div className="flex min-h-0 flex-1 flex-col p-4">
         <div className="min-h-0">
           <Link to={`/product/${id}`} className="block group">
-            <h3 className="text-base font-semibold text-gray-900 mb-1.5 line-clamp-2 min-h-[44px] group-hover:text-[#6b8e6f] transition-colors">
+            <h3 className="mb-2 line-clamp-2 min-h-[44px] text-[15px] font-semibold leading-snug text-gray-950 transition-colors group-hover:text-[#5a7a5e]">
               {name}
             </h3>
           </Link>
           
-          {/* Brand */}
-          <p className="text-xs font-semibold text-[#6b8e6f] mb-2 uppercase tracking-wide">JULIUS SILVERT</p>
-          
-          {/* Item Number */}
-          <p className="text-xs text-gray-600 mb-1">Item#: {itemNumber}</p>
-          
-          {/* Case Info */}
-          {caseInfo && <p className="text-xs text-gray-600 mb-2">{caseInfo}</p>}
+          {/* Specs row */}
+          <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600">
+            <span className="font-medium text-gray-700">WASM:</span>
+            <span className="tabular-nums">{wasmNumber}</span>
+            {caseInfo && (
+              <>
+                <span className="text-gray-300">•</span>
+                <span className="line-clamp-1">{caseInfo}</span>
+              </>
+            )}
+          </div>
           
           {/* Unit Toggle - Only show if we have both prices */}
           {casePrice && pcPrice && (
-            <div className="grid grid-cols-2 gap-0 mb-3">
+            <div className="mb-3 rounded-2xl bg-gray-50 p-1">
+              <div className="grid grid-cols-2 gap-1">
               <button
                 onClick={() => setSelectedUnit('case')}
-                className={`py-2 rounded-l-lg rounded-r-none border-r-0 text-xs font-medium transition-all ${
+                className={`rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
                   selectedUnit === 'case'
-                    ? 'bg-gray-100 text-gray-900 border border-gray-300'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                    ? 'bg-white text-gray-950 shadow-sm ring-1 ring-gray-200'
+                    : 'text-gray-600 hover:bg-white/70 hover:text-gray-900'
                 }`}
               >
                 CASE
               </button>
               <button
                 onClick={() => setSelectedUnit('pc')}
-                className={`py-2 rounded-r-lg rounded-l-none border-l-0 text-xs font-medium transition-all ${
+                className={`rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
                   selectedUnit === 'pc'
-                    ? 'bg-gray-100 text-gray-900 border border-gray-300'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                    ? 'bg-white text-gray-950 shadow-sm ring-1 ring-gray-200'
+                    : 'text-gray-600 hover:bg-white/70 hover:text-gray-900'
                 }`}
               >
                 PC
               </button>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Price + actions pinned to bottom so ADD aligns across the row */}
-        <div className="mt-auto pt-3 space-y-3">
+        {/* Price + actions */}
+        <div className="mt-auto space-y-3 pt-0">
           {/* Price */}
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900">${currentPrice.toFixed(2)}</span>
-              {perLb && (
-                <span className="text-xs text-gray-500">/ {perLb.toFixed(3)} {unit}</span>
-              )}
-              {!perLb && (
-                <span className="text-xs text-gray-500">/{unit}</span>
-              )}
+          <div className="rounded-2xl bg-gray-50 px-3 py-2.5">
+            <div className="flex items-end justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+                  {priceLabel ?? 'Price'}
+                </p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[28px] font-bold tracking-tight text-gray-950">
+                    ${currentPrice.toFixed(2)}
+                  </span>
+                  {perLb != null ? (
+                    <span className="text-xs text-gray-500">/{perLb.toFixed(3)} {unit}</span>
+                  ) : (
+                    <span className="text-xs text-gray-500">/{unit}</span>
+                  )}
+                </div>
+              </div>
+              <div className="shrink-0">
+                <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-gray-700 ring-1 ring-gray-200">
+                  {selectedUnit.toUpperCase()}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -187,14 +218,14 @@ export function ProductCard({
             <button
               type="button"
               onClick={handleAddClick}
-              className="flex-1 py-3 bg-black hover:bg-gray-800 text-white rounded-lg font-semibold transition-colors uppercase tracking-wide text-sm"
+              className="flex-1 rounded-2xl bg-brand-header py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-sm transition-all hover:bg-brand-header-hover hover:shadow-md active:scale-[0.99]"
               aria-label={`Add ${name} to cart`}
             >
               ADD
             </button>
             <button
               type="button"
-              className="px-3 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-3 py-3 text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
               aria-label={`More options for ${name}`}
             >
               <Menu className="w-4 h-4 text-gray-700" aria-hidden />
@@ -203,10 +234,10 @@ export function ProductCard({
         ) : (
           <div className="flex gap-2">
             {/* Quantity Selector */}
-            <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden bg-white">
+            <div className="flex items-center overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
               <button 
                 onClick={handleDecrement}
-                className="px-3 py-3 hover:bg-gray-100 transition-colors"
+                className="px-3 py-3 transition-colors hover:bg-gray-50"
               >
                 <Minus className="w-4 h-4 text-gray-700" />
               </button>
@@ -217,12 +248,12 @@ export function ProductCard({
                   const val = parseInt(e.target.value) || 1;
                   setQuantity(val);
                 }}
-                className="w-12 text-center text-base font-semibold border-x-2 border-gray-300 py-3"
+                className="w-12 border-x border-gray-200 py-3 text-center text-base font-semibold tabular-nums text-gray-950"
               />
               <button
                 type="button"
                 onClick={handleIncrement}
-                className="px-3 py-3 hover:bg-gray-100 transition-colors"
+                className="px-3 py-3 transition-colors hover:bg-gray-50"
                 aria-label="Increase quantity"
               >
                 <Plus className="w-4 h-4 text-gray-700" aria-hidden />
@@ -233,7 +264,7 @@ export function ProductCard({
             <button
               type="button"
               onClick={handleAddClick}
-              className="flex-1 px-4 py-3 bg-[#6b8e6f] hover:bg-[#5a7a5e] text-white rounded-lg font-semibold transition-colors text-sm"
+              className="flex-1 rounded-2xl bg-[#6b8e6f] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#5a7a5e] hover:shadow-md active:scale-[0.99]"
               aria-label={`Add ${name} to cart`}
             >
               Add to Cart
