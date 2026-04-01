@@ -14,7 +14,7 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (item: Omit<CartItem, 'quantity'>, quantity: number) => void;
+  addToCart: (item: Omit<CartItem, 'quantity'>, quantity: number, options?: { silent?: boolean }) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -27,7 +27,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addToCart = (item: Omit<CartItem, 'quantity'>, quantity: number) => {
+  const addToCart = (item: Omit<CartItem, 'quantity'>, quantity: number, options?: { silent?: boolean }) => {
     setItems(prevItems => {
       const existingItem = prevItems.find(i => i.id === item.id);
       
@@ -42,15 +42,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prevItems, { ...item, quantity }];
     });
 
-    toast.success('Added to cart', {
-      description: item.name,
-      duration: 2000,
-      closeButton: false,
-      style: {
-        background: '#ffffff',
-        color: '#111827',
-      },
-    });
+    if (!options?.silent) {
+      toast.success('Added to cart', {
+        description: item.name,
+        duration: 2000,
+        closeButton: false,
+        style: {
+          background: '#ffffff',
+          color: '#111827',
+        },
+      });
+    }
   };
 
   const removeFromCart = (id: string) => {

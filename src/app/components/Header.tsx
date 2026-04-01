@@ -1,14 +1,15 @@
-import { Search, ShoppingCart, Heart, User, HelpCircle, X, AlertCircle } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, HelpCircle, X, AlertCircle, Clock } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { Link, useNavigate } from 'react-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ALL_CATALOG_PRODUCTS,
   categoryProducts,
   DEPARTMENT_BY_CATEGORY,
 } from '../data/catalog';
 import { categoryRowMatches, productMatchesSearch } from '../utils/catalogSearch';
+import { addRecentSearch, getRecentSearches } from '../utils/recentSearches';
 
 export function Header() {
   const { getItemCount } = useCart();
@@ -18,7 +19,12 @@ export function Header() {
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchPanelOpen, setSearchPanelOpen] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  useEffect(() => {
+    setRecentSearches(getRecentSearches());
+  }, []);
 
   const { categoryMatches, productMatches } = useMemo(() => {
     const q = searchQuery.trim();
@@ -48,21 +54,27 @@ export function Header() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    setShowSearchResults(value.length > 0);
+    if (value.length > 0) setSearchPanelOpen(true);
   };
 
   const handleClearSearch = () => {
     setSearchQuery('');
-    setShowSearchResults(false);
+    setSearchPanelOpen(recentSearches.length > 0);
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setShowSearchResults(false);
+    const q = searchQuery.trim();
+    if (q) {
+      addRecentSearch(q);
+      setRecentSearches(getRecentSearches());
+      navigate(`/search?q=${encodeURIComponent(q)}`);
+      setSearchPanelOpen(false);
     }
   };
+
+  const showSearchPanel =
+    searchPanelOpen && (searchQuery.trim().length > 0 || recentSearches.length > 0);
 
   return (
     <header className="bg-brand-header text-white">
@@ -94,7 +106,10 @@ export function Header() {
               placeholder="Search products, SKU, categories…"
               value={searchQuery}
               onChange={handleSearchChange}
-              onFocus={() => searchQuery.length > 0 && setShowSearchResults(true)}
+              onFocus={() => setSearchPanelOpen(true)}
+              onBlur={() => {
+                window.setTimeout(() => setSearchPanelOpen(false), 200);
+              }}
               className="w-full pl-10 pr-10 py-2.5 rounded-lg bg-white text-gray-900 text-sm shadow-sm ring-1 ring-inset ring-black/5 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#6b8e6f]/50 focus:ring-offset-0"
             />
             {searchQuery && (
@@ -108,22 +123,48 @@ export function Header() {
             )}
           </div>
 
-          {/* Search Results Dropdown */}
-          {showSearchResults && (
+          {/* Search panel: live results or recent searches */}
+          {showSearchPanel && (
             <>
-              {/* Backdrop */}
-              <div 
+              <div
                 className="fixed inset-0 bg-black/20 z-40"
-                onClick={() => setShowSearchResults(false)}
+                onClick={() => setSearchPanelOpen(false)}
               />
-              
-              {/* Results Panel — mousedown keeps focus on input until navigation */}
+
               <div
                 className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-2xl max-h-[600px] overflow-y-auto z-50"
                 onMouseDown={(e) => e.preventDefault()}
               >
                 <div className="p-4">
-                  {categoryMatches.length === 0 && productMatches.length === 0 ? (
+                  {!searchQuery.trim() && recentSearches.length > 0 && (
+                    <div className="mb-4">
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Clock className="h-3.5 w-3.5" aria-hidden />
+                        Recent searches
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {recentSearches.map((term) => (
+                          <button
+                            key={term}
+                            type="button"
+                            className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-100 hover:border-gray-300 transition-colors"
+                            onClick={() => {
+                              setSearchQuery(term);
+                              addRecentSearch(term);
+                              setRecentSearches(getRecentSearches());
+                              navigate(`/search?q=${encodeURIComponent(term)}`);
+                              setSearchPanelOpen(false);
+                            }}
+                          >
+                            {term}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-3">Or start typing to search the catalog.</p>
+                    </div>
+                  )}
+
+                  {searchQuery.trim() && categoryMatches.length === 0 && productMatches.length === 0 ? (
                     <div
                       role="alert"
                       className="flex gap-2.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-left"
@@ -141,7 +182,7 @@ export function Header() {
                         </p>
                       </div>
                     </div>
-                  ) : (
+                  ) : searchQuery.trim() ? (
                     <>
                       {categoryMatches.length > 0 && (
                         <div className="mb-6">
@@ -154,7 +195,7 @@ export function Header() {
                                 key={cat.slug}
                                 to={`/category/${cat.slug}`}
                                 className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded-lg transition-colors group"
-                                onClick={() => setShowSearchResults(false)}
+                                onClick={() => setSearchPanelOpen(false)}
                               >
                                 <span className="text-base text-gray-900 group-hover:text-gray-700">
                                   {cat.label}
@@ -179,7 +220,7 @@ export function Header() {
                                 key={product.id}
                                 to={`/product/${product.id}`}
                                 onClick={() => {
-                                  setShowSearchResults(false);
+                                  setSearchPanelOpen(false);
                                   setSearchQuery('');
                                 }}
                                 className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors group text-left"
@@ -207,7 +248,7 @@ export function Header() {
                         </div>
                       )}
                     </>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </>

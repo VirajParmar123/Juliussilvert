@@ -1,16 +1,44 @@
 import { useCart } from '../context/CartContext';
+import type { CartItem } from '../context/CartContext';
 import { Header } from '../components/Header';
 import { Navigation } from '../components/Navigation';
 import { Footer } from '../components/Footer';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 export function CartPage() {
-  const { items, updateQuantity, removeFromCart, getTotal } = useCart();
+  const { items, updateQuantity, removeFromCart, addToCart, getTotal } = useCart();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
     navigate('/checkout');
+  };
+
+  const handleRemoveLine = (item: CartItem) => {
+    removeFromCart(item.id);
+    toast('Removed from cart', {
+      description: item.name,
+      duration: 6000,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          addToCart(
+            {
+              id: item.id,
+              image: item.image,
+              name: item.name,
+              itemNumber: item.itemNumber,
+              wasmNumber: item.wasmNumber,
+              price: item.price,
+              unit: item.unit,
+            },
+            item.quantity,
+            { silent: true }
+          );
+        },
+      },
+    });
   };
 
   if (items.length === 0) {
@@ -29,13 +57,21 @@ export function CartPage() {
           <div className="text-center">
             <ShoppingBag className="w-24 h-24 text-gray-300 mx-auto mb-4" />
             <h2 className="text-2xl font-medium text-gray-900 mb-2">Your cart is empty</h2>
-            <p className="text-gray-600 mb-6">Add items to get started</p>
-            <Link 
-              to="/"
-              className="inline-flex items-center px-6 py-3 bg-brand-header hover:bg-brand-header-hover text-white rounded-md transition-colors"
-            >
-              Continue Shopping
-            </Link>
+            <p className="text-gray-600 mb-6">Add items to get started, or search the catalog.</p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                to="/"
+                className="inline-flex items-center px-6 py-3 bg-brand-header hover:bg-brand-header-hover text-white rounded-md transition-colors"
+              >
+                Continue shopping
+              </Link>
+              <Link
+                to="/search"
+                className="inline-flex items-center px-6 py-3 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-50 transition-colors"
+              >
+                Browse search
+              </Link>
+            </div>
           </div>
         </main>
         
@@ -86,12 +122,16 @@ export function CartPage() {
                         <div className="text-sm text-gray-600 mb-3">
                           <div>Item: {item.itemNumber}</div>
                           <div>Wasm: {item.wasmNumber}</div>
+                          <div className="mt-1 text-xs text-gray-500 capitalize">
+                            Unit: {item.unit === 'case' ? 'Case' : item.unit === 'pc' ? 'Piece (PC)' : item.unit}
+                          </div>
                         </div>
                         
                         <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
                           {/* Quantity Controls */}
                           <div className="flex items-center border border-gray-300 rounded overflow-hidden">
-                            <button 
+                            <button
+                              type="button"
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               className="px-2 py-1.5 hover:bg-gray-100 transition-colors"
                             >
@@ -106,7 +146,8 @@ export function CartPage() {
                               }}
                               className="w-14 text-center py-1.5 border-x border-gray-300"
                             />
-                            <button 
+                            <button
+                              type="button"
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
                               className="px-2 py-1.5 hover:bg-gray-100 transition-colors"
                             >
@@ -116,7 +157,8 @@ export function CartPage() {
 
                           {/* Remove Button */}
                           <button
-                            onClick={() => removeFromCart(item.id)}
+                            type="button"
+                            onClick={() => handleRemoveLine(item)}
                             className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -150,7 +192,7 @@ export function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:sticky lg:top-24 z-10">
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-6 lg:sticky lg:top-28 z-10">
                 <h2 className="text-xl font-medium text-gray-900 mb-4">Order Summary</h2>
                 
                 <div className="space-y-3 mb-6">

@@ -24,7 +24,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const w = scrollRef.current.clientWidth || 360;
-      const cardWidth = Math.min(280, w * 0.72);
+      const cardWidth = Math.min(320, w * 0.72);
       const gap = 16;
       const scrollAmount = cardWidth * 2 + gap;
       scrollRef.current.scrollBy({
@@ -57,7 +57,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
 
         <div 
           ref={scrollRef}
-          className="grid grid-flow-col auto-cols-[min(280px,calc(100vw-2.5rem))] sm:auto-cols-[280px] gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth items-stretch pb-1 -mx-1 px-1"
+          className="grid grid-flow-col auto-cols-[min(320px,calc(100vw-2.5rem))] sm:auto-cols-[320px] gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth items-stretch pb-1 -mx-1 px-1"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {products.map((product) => (

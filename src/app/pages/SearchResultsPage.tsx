@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Clock } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router';
 import { Header } from '../components/Header';
 import { Navigation } from '../components/Navigation';
@@ -9,19 +9,29 @@ import { SortBySelect } from '../components/SortBySelect';
 import { ALL_CATALOG_PRODUCTS } from '../data/catalog';
 import { getEmptySearchRecovery, productMatchesSearch } from '../utils/catalogSearch';
 import { sortProducts, type SortByValue } from '../utils/productSort';
+import { getRecentSearches } from '../utils/recentSearches';
 
 const allProducts = ALL_CATALOG_PRODUCTS;
 
 const catalogPositionOrder = new Map(allProducts.map((p, i) => [p.id, i]));
 
+const popularPicks = allProducts.slice(0, 8);
+
 export function SearchResultsPage() {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
+  const trimmedQuery = searchQuery.trim();
   const [sortBy, setSortBy] = useState<SortByValue>('position');
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  useEffect(() => {
+    setRecentSearches(getRecentSearches());
+  }, []);
 
   const filteredProducts = useMemo(() => {
+    if (!trimmedQuery) return [];
     return allProducts.filter((product) => productMatchesSearch(product, searchQuery));
-  }, [searchQuery]);
+  }, [searchQuery, trimmedQuery]);
 
   const emptyRecovery = useMemo(
     () => (searchQuery.trim() ? getEmptySearchRecovery(searchQuery, allProducts) : null),
@@ -49,11 +59,67 @@ export function SearchResultsPage() {
         tabIndex={-1}
         className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12 outline-none"
       >
-        {/* Search Header + sort */}
+        {!trimmedQuery ? (
+          <div>
+            <div className="mb-8 max-w-2xl">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-900 mb-3">
+                Search catalog
+              </h1>
+              <p className="text-gray-600">
+                Use the search bar above to find products by name, SKU, or category. Your recent searches
+                appear here for quick access.
+              </p>
+            </div>
+
+            {recentSearches.length > 0 && (
+              <div className="mb-10 rounded-xl border border-gray-200 bg-gray-50/80 p-4 sm:p-5">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Clock className="h-4 w-4" aria-hidden />
+                  Recent searches
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {recentSearches.map((term) => (
+                    <Link
+                      key={term}
+                      to={`/search?q=${encodeURIComponent(term)}`}
+                      className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:border-[#022b3a] hover:text-[#022b3a]"
+                    >
+                      {term}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Popular picks</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-stretch">
+                {popularPicks.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    variant="grid"
+                    id={product.id}
+                    image={product.image}
+                    name={product.name}
+                    itemNumber={product.itemNumber}
+                    wasmNumber={product.itemNumber}
+                    price={product.casePrice}
+                    unit={product.unit}
+                    casePrice={product.casePrice}
+                    pcPrice={product.pcPrice}
+                    perLb={product.perLb}
+                    caseInfo={product.caseInfo}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-900 mb-3 sm:mb-4 break-words">
-              Search Results for "{searchQuery}"
+              Search results for &quot;{trimmedQuery}&quot;
             </h1>
             <p className="text-gray-600">
               Found {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
@@ -64,7 +130,6 @@ export function SearchResultsPage() {
           )}
         </div>
 
-        {/* Products Grid */}
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-stretch">
             {sortedProducts.map((product) => (
@@ -189,6 +254,8 @@ export function SearchResultsPage() {
               </div>
             )}
           </div>
+        )}
+          </>
         )}
       </main>
 

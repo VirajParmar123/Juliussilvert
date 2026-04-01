@@ -161,7 +161,7 @@ export function ProductDetailPage() {
                     unit: product.unit,
                   })
                 }
-                className="absolute top-3 right-3 p-2.5 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                className="absolute left-3 top-3 p-2.5 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
               >
                 <Heart
                   className={`w-5 h-5 ${favorite ? 'fill-red-500 text-red-500' : 'text-gray-700'}`}
