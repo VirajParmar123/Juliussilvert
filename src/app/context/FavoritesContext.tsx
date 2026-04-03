@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface FavoriteItem {
+  weight: ReactNode;
   id: string;
   image: string;
   name: string;

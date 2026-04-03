@@ -1,10 +1,9 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json* pnpm-lock.yaml* ./
-RUN npm install -g pnpm
-RUN pnpm install --frozen-lockfile --no-optional
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
-RUN pnpm run build
+RUN npm run build
 
 FROM node:20-alpine AS runtime
 WORKDIR /app
